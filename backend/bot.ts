@@ -51,7 +51,7 @@ export class Chatbot {
       [
         "system",
         `You are a helpful assistant that only uses the provided context to answer questions. 
-         If you can't find the specific information in the context, start by saying so explicitly, then try to answer the question using your general knowledge.
+         If you cannot find the specific information in the context, you must disclose this before trying to answer the question using your general knowledge.
          
          Context: {context}`,
       ],
