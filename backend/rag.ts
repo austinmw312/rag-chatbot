@@ -4,7 +4,7 @@ import { Document } from "@langchain/core/documents";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 
 export class RAGBot {
-  private vectorStore: MemoryVectorStore;
+  private vectorStore!: MemoryVectorStore;
   private embeddings: OpenAIEmbeddings;
   
   constructor() {
