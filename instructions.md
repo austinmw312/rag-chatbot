@@ -31,3 +31,39 @@ In the backend, we will parse each file using LlamaParse (which parses PDFs and 
 
 The markdown files will be used to do Retrieval Augmented Generation (RAG) with the chatbot.
 
+
+## Current file structure:
+.
+├── README.md
+├── app
+│   ├── favicon.ico
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx
+├── backend
+│   ├── bot.ts
+│   ├── parse.ts
+│   ├── rag.ts
+│   └── test.ts
+├── data
+│   ├── canada.pdf
+│   └── svce.pdf
+├── eslint.config.mjs
+├── instructions.md
+├── markdown
+│   ├── canada.md
+│   └── svce.md
+├── next-env.d.ts
+├── next.config.ts
+├── notes.md
+├── package-lock.json
+├── package.json
+├── postcss.config.mjs
+├── public
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── next.svg
+│   ├── vercel.svg
+│   └── window.svg
+├── tailwind.config.ts
+└── tsconfig.json
