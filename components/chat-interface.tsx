@@ -6,7 +6,7 @@ import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
 
 type Message = {
-  role: "user" | "assistant";
+  role: string;
   content: string;
 };
 
@@ -25,7 +25,7 @@ export function ChatInterface() {
     setIsLoading(true);
 
     // Add user message to chat
-    const newMessages = [...messages, { role: "user", content: userMessage }];
+    const newMessages = [...messages, { role: "user" as const, content: userMessage }];
     setMessages(newMessages);
 
     try {
