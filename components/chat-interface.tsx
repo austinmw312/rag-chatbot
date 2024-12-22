@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
+import ReactMarkdown from 'react-markdown';
 
 type Message = {
   role: string;
@@ -65,7 +66,9 @@ export function ChatInterface() {
                   : "bg-muted mr-12"
               }`}
             >
-              <p className="text-sm">{message.content}</p>
+              <ReactMarkdown className="text-sm prose dark:prose-invert max-w-none">
+                {message.content}
+              </ReactMarkdown>
             </div>
           ))}
           {isLoading && (
