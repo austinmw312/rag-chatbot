@@ -62,11 +62,15 @@ export function ChatInterface() {
               key={i}
               className={`rounded-lg p-4 ${
                 message.role === "user" 
-                  ? "bg-primary text-primary-foreground ml-12" 
+                  ? "bg-primary text-black ml-12"
                   : "bg-muted mr-12"
               }`}
             >
-              <ReactMarkdown className="text-sm prose dark:prose-invert max-w-none">
+              <ReactMarkdown 
+                className={`text-sm prose dark:prose-invert max-w-none ${
+                  message.role === "user" ? "!text-black" : ""
+                }`}
+              >
                 {message.content}
               </ReactMarkdown>
             </div>
