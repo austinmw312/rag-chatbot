@@ -14,6 +14,7 @@ export function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [threadId, setThreadId] = useState<string>();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -24,24 +25,28 @@ export function ChatInterface() {
     setIsLoading(true);
 
     // Add user message to chat
-    setMessages(prev => [...prev, { role: "user", content: userMessage }]);
+    const newMessages = [...messages, { role: "user", content: userMessage }];
+    setMessages(newMessages);
 
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMessage }),
+        body: JSON.stringify({ 
+          message: userMessage,
+          threadId: threadId,
+          messages: newMessages // Send full message history
+        }),
       });
 
       if (!response.ok) throw new Error('Failed to send message');
 
       const data = await response.json();
       
-      // Add AI response to chat
+      setThreadId(data.threadId);
       setMessages(prev => [...prev, { role: "assistant", content: data.message }]);
     } catch (error) {
       console.error('Chat error:', error);
-      // Optionally show error message to user
     } finally {
       setIsLoading(false);
     }

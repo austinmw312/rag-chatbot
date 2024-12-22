@@ -51,7 +51,7 @@ export class Chatbot {
       [
         "system",
         `You are a helpful assistant that only uses the provided context to answer questions. 
-         If you can't find the specific information in the context, say so explicitly.
+         If you can't find the specific information in the context, start by saying so explicitly, then try to answer the question using your general knowledge.
          
          Context: {context}`,
       ],
@@ -65,11 +65,9 @@ export class Chatbot {
       const messageText = typeof lastMessage.content === 'string' 
         ? lastMessage.content 
         : lastMessage.content.map(c => 'text' in c ? c.text : '').join(' ');
-      const searchText = messageText.toLowerCase().includes('previous') || 
-                        messageText.toLowerCase().includes('that') || 
-                        messageText.toLowerCase().includes('the above')
-        ? `${messageText} ${this.lastContext.map(doc => doc.pageContent).join(' ')}`
-        : messageText;
+      
+      // Query RAG with message and last context
+      const searchText = `${messageText} ${this.lastContext.map(doc => doc.pageContent).join(' ')}`;
       const context = await this.rag.query(searchText);
       
       // Trim messages to manage context window
@@ -107,25 +105,27 @@ export class Chatbot {
   /**
    * Send a message to the chatbot
    */
-  async sendMessage(message: string, threadId?: string) {
+  async sendMessage(message: string, threadId?: string, previousMessages: Array<{role: string, content: string}> = []) {
     const config = {
       configurable: {
         thread_id: threadId || uuidv4(),
       },
     };
 
+    // Convert previous messages to the format expected by the bot
+    const allMessages = [
+      ...previousMessages,
+      {
+        role: "user",
+        content: message,
+      },
+    ];
+
     const input = {
-      messages: [
-        {
-          role: "user",
-          content: message,
-        },
-      ],
+      messages: allMessages,
     };
 
     const response = await this.app.invoke(input, config);
-    
-    // Store context for next query
     this.lastContext = response.context || [];
     
     return response.messages[response.messages.length - 1];

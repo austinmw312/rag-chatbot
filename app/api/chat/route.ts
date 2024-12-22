@@ -23,17 +23,20 @@ async function loadMarkdownFiles() {
 
 export async function POST(req: Request) {
   try {
-    // Initialize bot if not already done
     if (!isInitialized) {
       await bot.initialize();
-      // Load and add markdown documents
       const documents = await loadMarkdownFiles();
       await bot.addDocuments(documents);
       isInitialized = true;
     }
 
-    const { message, threadId } = await req.json();
-    const response = await bot.sendMessage(message, threadId);
+    const { message, threadId, messages } = await req.json();
+    
+    const response = await bot.sendMessage(
+      message, 
+      threadId,
+      messages.slice(0, -1) // Send all previous messages except the last one (current message)
+    );
     
     return NextResponse.json({ 
       message: response.content,
