@@ -17,7 +17,7 @@ Relevant files for RAG:
 ./backend/test.ts
 ./backend/parse.ts
 
-Our current implementation of RAG is in ./backend. It uses the files in ./markdown to answer questions. It uses the console as the chat interface currently.
+Our current implementation of RAG is in ./backend. It takes files from ./data and parses them into markdown files, storing them in ./markdown. It uses the resulting files in ./markdown to answer questions.
 
 ### File Upload and Management Interface
 

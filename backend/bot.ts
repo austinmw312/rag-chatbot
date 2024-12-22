@@ -30,8 +30,8 @@ const messageTrimmer = trimMessages({
 });
 
 export class Chatbot {
-  private app;
-  private llm;
+  private app!: ReturnType<typeof StateGraph.prototype.compile>;
+  private llm: ChatOpenAI;
   private rag: RAGBot;
   private lastContext: Document[] = []; // Store last context
 
