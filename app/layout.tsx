@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Navigation } from "@/components/navigation";
+import { ChatProvider } from "@/components/chat-context";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,12 +30,14 @@ export default function RootLayout({
           enableSystem={false}
           forcedTheme="dark"
         >
-          <div className="flex min-h-screen">
-            <Navigation />
-            <main className="flex-1">
-              {children}
-            </main>
-          </div>
+          <ChatProvider>
+            <div className="flex min-h-screen">
+              <Navigation />
+              <main className="flex-1">
+                {children}
+              </main>
+            </div>
+          </ChatProvider>
         </ThemeProvider>
       </body>
     </html>

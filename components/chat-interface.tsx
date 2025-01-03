@@ -5,14 +5,10 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
 import ReactMarkdown from 'react-markdown';
-
-type Message = {
-  role: string;
-  content: string;
-};
+import { useChatContext } from './chat-context';
 
 export function ChatInterface() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { messages, addMessage } = useChatContext();
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [threadId, setThreadId] = useState<string>();
@@ -25,9 +21,8 @@ export function ChatInterface() {
     setInput("");
     setIsLoading(true);
 
-    // Add user message to chat
-    const newMessages = [...messages, { role: "user" as const, content: userMessage }];
-    setMessages(newMessages);
+    // Add user message to context
+    addMessage({ role: 'user', content: userMessage });
 
     try {
       const response = await fetch("/api/chat", {
@@ -36,7 +31,7 @@ export function ChatInterface() {
         body: JSON.stringify({ 
           message: userMessage,
           threadId: threadId,
-          messages: newMessages // Send full message history
+          messages: messages // Send full message history
         }),
       });
 
@@ -45,7 +40,7 @@ export function ChatInterface() {
       const data = await response.json();
       
       setThreadId(data.threadId);
-      setMessages(prev => [...prev, { role: "assistant", content: data.message }]);
+      addMessage({ role: 'assistant', content: data.message });
     } catch (error) {
       console.error('Chat error:', error);
     } finally {
