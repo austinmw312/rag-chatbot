@@ -136,7 +136,7 @@ Current file structure:
 6. **User Experience**
    - Add loading states during upload/parsing
    - Show parsing status for each file
-   - Add error handling and user feedback
+   - Add error handling
    - Implement file deletion with cascade (storage + database)
 
 7. **Security & Optimization**
@@ -176,10 +176,3 @@ Current file structure:
    - Implement vector store indexing
    - Add caching layer for frequent queries
    - Set up batch processing for large documents
-   - Implement vector store maintenance procedures
-
-4. **Migration Strategy**
-   - Create migration script for existing documents
-   - Implement fallback mechanism during migration
-   - Add vector store health checks
-   - Set up monitoring for vector operations
