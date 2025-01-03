@@ -80,8 +80,9 @@ Current file structure:
 
 1. **Setup & Configuration**
    - Install Supabase client: `@supabase/supabase-js`
-   - Create a Supabase project and set up storage bucket for files
-   - Add Supabase URL and anon key to `.env.local`
+   - Create a Supabase project and set up public storage bucket for files
+   - Configure RLS policies for anonymous access
+   - Add Supabase anon key to `.env.local` (no auth needed)
    - Create a utils file for Supabase client: `lib/supabase.ts`
 
 2. **Database Structure**
@@ -142,9 +143,11 @@ Current file structure:
 7. **Security & Optimization**
    - Add file type validation
    - Implement file size limits
-   - Set up proper Supabase RLS policies
-   - Add caching for frequently accessed files
-   - Implement cleanup for unused storage items
+   - Configure public RLS policies for anonymous access
+   - Set up periodic cleanup of old files
+   - Configure storage quotas
+   - Add rate limiting for uploads
+   - Implement shared access to all uploaded files
 
 # Vector Database Implementation with Supabase pgvector
 

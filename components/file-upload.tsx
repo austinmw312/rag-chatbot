@@ -1,29 +1,75 @@
+"use client";
+
 import { Button } from "./ui/button";
-import { Plus, Trash2 } from "lucide-react";
+import { Input } from "./ui/input";
+import { useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 
 export function FileUpload() {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) return;
+    
+    try {
+      setUploading(true);
+      
+      // Upload file to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('files')
+        .upload(`${Date.now()}-${selectedFile.name}`, selectedFile);
+
+      if (uploadError) throw uploadError;
+
+      // Add metadata to files table
+      const { error: dbError } = await supabase
+        .from('files')
+        .insert({
+          name: selectedFile.name,
+          size: selectedFile.size,
+          type: selectedFile.type,
+          parsed_status: false
+        });
+
+      if (dbError) throw dbError;
+      
+      setSelectedFile(null);
+    } catch (error: any) {
+      console.error('Error uploading file:', error.message || error);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
-    <div>
-      <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Files</h1>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add File
+    <div className="p-4">
+      <div className="flex items-center gap-4">
+        <Input
+          type="file"
+          onChange={handleFileSelect}
+          accept=".pdf,.doc,.docx,.txt"
+          className="max-w-xs"
+          disabled={uploading}
+        />
+        <Button 
+          onClick={handleUpload} 
+          disabled={!selectedFile || uploading}
+        >
+          {uploading ? "Uploading..." : "Upload"}
         </Button>
       </div>
-      
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {/* Example file card */}
-        <div className="group relative rounded-lg border p-4">
-          <div className="absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100">
-            <Button variant="ghost" size="icon">
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-          <div className="aspect-[3/4] rounded-md bg-muted" />
-          <p className="mt-2 text-sm font-medium">document.pdf</p>
-        </div>
-      </div>
+      {selectedFile && (
+        <p className="mt-2 text-sm text-muted-foreground">
+          Selected: {selectedFile.name}
+        </p>
+      )}
     </div>
   );
 } 

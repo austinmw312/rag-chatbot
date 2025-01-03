@@ -1,10 +1,8 @@
 Next steps:
-- Integrate with a database to support file upload, vector search, etc.
-- Currently using a local vector store, need to integrate with a cloud vector store, or run local vector store on server? 
-- Retrieve files from the database and do LlamaParse on them, then RAG
-- Implement frontend features like file preview and management
-- Show example files and example prompts to test with
-- Implement user authentication?
+- Implement Supabase and PGVector integration
+- Detailed instructions are in instructions.md
+- Note that we are on a new branch for the supabase integration, so we eventually will need to merge that into main
+- If anything gets messed up, we can just go back to the main branch and start over
 
 - File types?
 - How to store in database? Map PDF to markdown?
