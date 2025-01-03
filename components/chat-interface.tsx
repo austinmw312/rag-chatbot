@@ -6,6 +6,7 @@ import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
 import ReactMarkdown from 'react-markdown';
 import { useChatContext } from './chat-context';
+import { SuggestedPrompts } from "./suggested-prompts";
 
 export function ChatInterface() {
   const { messages, addMessage } = useChatContext();
@@ -13,25 +14,28 @@ export function ChatInterface() {
   const [isLoading, setIsLoading] = useState(false);
   const [threadId, setThreadId] = useState<string>();
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!input.trim() || isLoading) return;
+  async function handleSubmit(e: React.FormEvent | string) {
+    if (typeof e !== 'string') {
+      e.preventDefault();
+    }
 
-    const userMessage = input.trim();
+    const messageText = typeof e === 'string' ? e : input;
+    
+    if (!messageText.trim() || isLoading) return;
+
     setInput("");
     setIsLoading(true);
 
-    // Add user message to context
-    addMessage({ role: 'user', content: userMessage });
+    addMessage({ role: 'user', content: messageText.trim() });
 
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-          message: userMessage,
+          message: messageText.trim(),
           threadId: threadId,
-          messages: messages // Send full message history
+          messages: messages
         }),
       });
 
@@ -48,36 +52,44 @@ export function ChatInterface() {
     }
   }
 
+  const handleSelectPrompt = (prompt: string) => {
+    handleSubmit(prompt);
+  };
+
   return (
-    <>
-      <ScrollArea className="flex-1 p-4">
-        <div className="space-y-4">
-          {messages.map((message, i) => (
-            <div
-              key={i}
-              className={`rounded-lg p-4 ${
-                message.role === "user" 
-                  ? "bg-primary text-black ml-12"
-                  : "bg-muted mr-12"
-              }`}
-            >
-              <ReactMarkdown 
-                className={`text-sm prose dark:prose-invert max-w-none ${
-                  message.role === "user" ? "!text-black" : ""
+    <div className="flex flex-col h-full">
+      <div className="flex-1 overflow-y-auto">
+        <ScrollArea className="flex-1 p-4">
+          <div className="space-y-4">
+            {messages.map((message, i) => (
+              <div
+                key={i}
+                className={`rounded-lg p-4 ${
+                  message.role === "user" 
+                    ? "bg-primary text-black ml-12"
+                    : "bg-muted mr-12"
                 }`}
               >
-                {message.content}
-              </ReactMarkdown>
-            </div>
-          ))}
-          {isLoading && (
-            <div className="bg-muted rounded-lg p-4 mr-12">
-              <p className="text-sm">Thinking...</p>
-            </div>
-          )}
-        </div>
-      </ScrollArea>
-      <div className="border-t p-4">
+                <ReactMarkdown 
+                  className={`text-sm prose dark:prose-invert max-w-none ${
+                    message.role === "user" ? "!text-black" : ""
+                  }`}
+                >
+                  {message.content}
+                </ReactMarkdown>
+              </div>
+            ))}
+            {isLoading && (
+              <div className="bg-muted rounded-lg p-4 mr-12">
+                <p className="text-sm">Thinking...</p>
+              </div>
+            )}
+          </div>
+        </ScrollArea>
+      </div>
+      
+      <div className="p-4 border-t">
+        <SuggestedPrompts onSelectPrompt={handleSelectPrompt} />
         <form className="flex gap-4" onSubmit={handleSubmit}>
           <Input
             placeholder="Type your message..."
@@ -91,6 +103,6 @@ export function ChatInterface() {
           </Button>
         </form>
       </div>
-    </>
+    </div>
   );
 } 
