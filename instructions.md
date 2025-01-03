@@ -75,3 +75,111 @@ Current file structure:
 ├── postcss.config.mjs
 ├── tailwind.config.ts
 └── tsconfig.json
+
+# File Upload Implementation Plan with Supabase
+
+1. **Setup & Configuration**
+   - Install Supabase client: `@supabase/supabase-js`
+   - Create a Supabase project and set up storage bucket for files
+   - Add Supabase URL and anon key to `.env.local`
+   - Create a utils file for Supabase client: `lib/supabase.ts`
+
+2. **Database Structure**
+   - Create two tables in Supabase:
+     - `files`: storing file metadata (id, name, size, type, created_at, parsed_status)
+     - `file_contents`: storing parsed markdown content (id, file_id, content)
+
+3. **File Upload Flow**
+   Files to update:
+   - `components/file-upload.tsx`:
+     - Add drag-and-drop or file picker
+     - Handle file upload to Supabase storage
+     - Show upload progress
+     - Trigger parsing after upload
+
+   - `app/api/upload/route.ts`:
+     - Create new API endpoint
+     - Handle file upload validation
+     - Store file metadata in Supabase
+     - Trigger parsing process
+
+   - `backend/parse.ts`:
+     - Modify to work with Supabase storage
+     - Download file from Supabase
+     - Parse with LlamaParse
+     - Store resulting markdown in `file_contents` table
+
+4. **File Management Interface**
+   Files to update:
+   - `app/files/page.tsx`:
+     - Fetch file list from Supabase
+     - Display file grid with previews
+     - Add delete functionality
+     - Add file preview modal
+
+   - `components/file-preview.tsx` (new):
+     - Create preview component
+     - Fetch and display markdown content
+     - Handle different file types
+
+5. **RAG Integration**
+   Files to update:
+   - `backend/rag.ts`:
+     - Modify to fetch documents from Supabase
+     - Update vector store with database content
+     - Maintain synchronization with uploaded files
+
+   - `backend/bot.ts`:
+     - Ensure bot can access Supabase stored content
+     - Update context handling for database-stored files
+
+6. **User Experience**
+   - Add loading states during upload/parsing
+   - Show parsing status for each file
+   - Add error handling and user feedback
+   - Implement file deletion with cascade (storage + database)
+
+7. **Security & Optimization**
+   - Add file type validation
+   - Implement file size limits
+   - Set up proper Supabase RLS policies
+   - Add caching for frequently accessed files
+   - Implement cleanup for unused storage items
+
+# Vector Database Implementation with Supabase pgvector
+
+1. **Setup & Configuration**
+   - Enable pgvector extension in Supabase project
+   - Create vectors table in Supabase:
+     - `embeddings`: (id, content_id, embedding, metadata)
+   - Update `.env.local` with necessary pgvector configurations
+
+2. **Vector Store Integration**
+   Files to update:
+   - `backend/rag.ts`:
+     - Replace MemoryVectorStore with PGVectorStore
+     - Implement vector storage and retrieval using Supabase
+     - Add error handling for database operations
+     - Add batch processing for large document sets
+
+   - `backend/bot.ts`:
+     - Update similarity search to use pgvector
+     - Modify context handling for database-stored vectors
+     - Optimize query performance with proper indexing
+
+   - `backend/parse.ts`:
+     - Add vector embedding generation during file parsing
+     - Implement batch uploads to vector store
+     - Add cleanup for old vectors on file updates
+
+3. **Performance Optimization**
+   - Implement vector store indexing
+   - Add caching layer for frequent queries
+   - Set up batch processing for large documents
+   - Implement vector store maintenance procedures
+
+4. **Migration Strategy**
+   - Create migration script for existing documents
+   - Implement fallback mechanism during migration
+   - Add vector store health checks
+   - Set up monitoring for vector operations
