@@ -88,8 +88,11 @@ export function ChatInterface() {
         </ScrollArea>
       </div>
       
+      <SuggestedPrompts 
+        onSelectPrompt={handleSelectPrompt} 
+        messageCount={messages.length}
+      />
       <div className="p-4 border-t">
-        <SuggestedPrompts onSelectPrompt={handleSelectPrompt} />
         <form className="flex gap-4" onSubmit={handleSubmit}>
           <Input
             placeholder="Type your message..."
