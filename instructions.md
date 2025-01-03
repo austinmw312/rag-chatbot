@@ -176,3 +176,22 @@ Current file structure:
    - Implement vector store indexing
    - Add caching layer for frequent queries
    - Set up batch processing for large documents
+
+# Branch Management
+
+These Supabase and pgvector implementations are being developed in a separate branch: feature/supabase-integration
+
+If you need to revert to the local implementation:
+1. Switch back to main branch:
+   ```bash
+   git checkout main
+   ```
+
+2. If you need to start fresh with Supabase implementation:
+   ```bash
+   git checkout main
+   git branch -D feature/supabase-integration
+   git checkout -b feature/supabase-integration
+   ```
+
+This allows us to maintain a working local implementation while developing the Supabase integration. The local implementation uses file system storage and MemoryVectorStore, while the Supabase branch will implement cloud storage and pgvector.
