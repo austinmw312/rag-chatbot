@@ -15,8 +15,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const parser = new Parser(process.env.LLAMA_CLOUD_API_KEY!);
-    await parser.parseFile(fileId, bucketPath);
+    const parser = new Parser();
+    await parser.parseFile(fileId, bucketPath, process.env.LLAMA_CLOUD_API_KEY!);
 
     return NextResponse.json({ success: true });
 
