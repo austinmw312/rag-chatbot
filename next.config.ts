@@ -1,9 +1,11 @@
 import type { NextConfig } from "next";
+import type { Configuration } from 'webpack';
 
 const nextConfig: NextConfig = {
-  webpack: (config: any, { isServer }: { isServer: boolean }) => {
+  webpack: (config: Configuration, { isServer }: { isServer: boolean }) => {
     // Exclude onnxruntime-node from webpack build
     if (!isServer) {
+      config.resolve = config.resolve || {};
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,
@@ -12,7 +14,8 @@ const nextConfig: NextConfig = {
         crypto: false,
       };
     }
-    config.externals = [...(config.externals || []), 'onnxruntime-node'];
+    config.externals = (config.externals || []) as string[];
+    (config.externals as string[]).push('onnxruntime-node');
     
     // Suppress warnings from @huggingface/transformers
     config.ignoreWarnings = [
