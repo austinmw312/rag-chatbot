@@ -13,6 +13,12 @@ const nextConfig: NextConfig = {
       };
     }
     config.externals = [...(config.externals || []), 'onnxruntime-node'];
+    
+    // Suppress warnings from @huggingface/transformers
+    config.ignoreWarnings = [
+      { module: /@huggingface\/transformers/ }
+    ];
+    
     return config;
   },
 };
