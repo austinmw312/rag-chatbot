@@ -2,7 +2,7 @@
 
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useToast } from "@/hooks/use-toast";
 import { FileIcon, UploadCloud } from "lucide-react";
@@ -13,6 +13,31 @@ export function FileUpload() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
+  const [parsingFileId, setParsingFileId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!parsingFileId) return;
+
+    const checkStatus = async () => {
+      try {
+        const response = await fetch(`/api/parse/status?fileId=${parsingFileId}`);
+        const { parsed } = await response.json();
+
+        if (parsed) {
+          setParsingFileId(null);
+          toast({
+            title: "File processed successfully",
+            description: "Your file has been parsed and is ready to use.",
+          });
+        }
+      } catch (error) {
+        console.error('Error checking parse status:', error);
+      }
+    };
+
+    const interval = setInterval(checkStatus, 2000);
+    return () => clearInterval(interval);
+  }, [parsingFileId, toast]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -27,27 +52,46 @@ export function FileUpload() {
       setUploading(true);
       
       // Upload file to Supabase Storage
+      const filePath = `${Date.now()}-${selectedFile.name}`;
       const { error: uploadError } = await supabase.storage
         .from('files')
-        .upload(`${Date.now()}-${selectedFile.name}`, selectedFile);
+        .upload(filePath, selectedFile);
 
       if (uploadError) throw uploadError;
 
       // Add metadata to files table
-      const { error: dbError } = await supabase
+      const { data: fileData, error: dbError } = await supabase
         .from('files')
         .insert({
           name: selectedFile.name,
           size: selectedFile.size,
           type: selectedFile.type,
           parsed_status: false
-        });
+        })
+        .select('id')
+        .single();
 
       if (dbError) throw dbError;
       
+      // Trigger parsing
+      const parseResponse = await fetch('/api/parse', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fileId: fileData.id,
+          bucketPath: filePath
+        })
+      });
+
+      if (!parseResponse.ok) {
+        throw new Error('Failed to start parsing');
+      }
+
+      setParsingFileId(fileData.id);
+      
       toast({
         title: "File uploaded successfully",
-        description: `${selectedFile.name} has been uploaded and will be processed.`,
+        description: "Your file is being processed...",
         variant: "default",
       });
       

@@ -110,6 +110,40 @@ Current file structure:
      - Parse with LlamaParse
      - Store resulting markdown in `file_contents` table
 
+   New files to create for parsing flow:
+   - `lib/parser.ts`:
+     - Port working logic from existing parse.ts
+     - Add Supabase integration
+     - Keep same LlamaParse configuration that works
+     - Handle temp file management
+
+   - `app/api/parse/route.ts`:
+     - Force Node.js runtime with `export const runtime = 'nodejs'`
+     - Use existing LlamaParse setup that works
+     - Download from Supabase to temp directory
+     - Use parser service
+     - Clean up temp files
+
+   - `app/api/parse/status/route.ts`:
+     - Simple endpoint to check parsed_status in files table
+     - Can run in Edge runtime
+
+   - `app/api/parse/results/route.ts`:
+     - Simple endpoint to fetch parsed content from file_contents
+     - Can run in Edge runtime
+
+   Parsing Process Flow:
+   1. File uploaded to Supabase storage
+   2. Frontend calls Node.js parse API with file details
+   3. Parser (running in Node.js):
+      - Creates temp directory
+      - Downloads file from Supabase to temp
+      - Uses existing working LlamaParse logic
+      - Stores result in file_contents table
+      - Updates parsed_status in files table
+      - Cleans up temp directory
+   4. Frontend polls status endpoint until complete
+
 4. **File Management Interface**
    Files to update:
    - `app/files/page.tsx`:

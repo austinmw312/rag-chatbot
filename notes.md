@@ -10,3 +10,17 @@ Next steps:
 - Should users be able to select specific documents to chat with, or will it always use all documents?
 - Supabase?
 - 
+
+
+
+Git commands:
+
+# See commit history
+git log
+Press Q to exit
+
+# Reset to a commit (replace with desiredcommit hash)
+git reset --hard 06162cda88a57822817eb3c24edc5eb0a2d4c979
+
+# Remove all untracked files and directories to go back to exactly how the commit was
+git clean -fd

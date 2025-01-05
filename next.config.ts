@@ -1,7 +1,20 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  webpack: (config: any, { isServer }: { isServer: boolean }) => {
+    // Exclude onnxruntime-node from webpack build
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        child_process: false,
+        net: false,
+        crypto: false,
+      };
+    }
+    config.externals = [...(config.externals || []), 'onnxruntime-node'];
+    return config;
+  },
 };
 
 export default nextConfig;
