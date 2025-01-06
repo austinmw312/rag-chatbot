@@ -36,5 +36,5 @@ ADD CONSTRAINT embeddings_file_id_fkey
   REFERENCES files(id)
   ON DELETE CASCADE;
 
--- Create HNSW index for fast similarity search
-CREATE INDEX ON embeddings USING hnsw (embedding vector_ip_ops);
+-- Create HNSW index for cosine similarity (for OpenAI embeddings)
+CREATE INDEX ON embeddings USING hnsw (embedding vector_cosine_ops);

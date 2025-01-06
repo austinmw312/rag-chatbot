@@ -8,7 +8,9 @@ export class RAGBot {
   private embeddings: OpenAIEmbeddings;
   
   constructor() {
-    this.embeddings = new OpenAIEmbeddings();
+    this.embeddings = new OpenAIEmbeddings({
+      model: "text-embedding-3-small"
+    });
   }
 
   async initialize() {
