@@ -6,7 +6,6 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useToast } from "@/hooks/use-toast";
 import { FileIcon, UploadCloud, Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { FileList } from "@/components/file-list";
 
 const ALLOWED_FILE_TYPES = [
@@ -31,6 +30,25 @@ export function FileUpload() {
   const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
   const [parsingFileId, setParsingFileId] = useState<string | null>(null);
+  const [files, setFiles] = useState<FileItem[]>([]);
+
+  const fetchFiles = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('files')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setFiles(data || []);
+    } catch (error) {
+      console.error('Error fetching files:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchFiles();
+  }, []);
 
   useEffect(() => {
     if (!parsingFileId) return;
@@ -105,6 +123,7 @@ export function FileUpload() {
       }
 
       setParsingFileId(fileData.id);
+      await fetchFiles();
       
       toast({
         title: "File uploaded successfully",
@@ -184,7 +203,7 @@ export function FileUpload() {
           </div>
         )}
       </div>
-      <FileList />
+      <FileList files={files} onFilesChange={fetchFiles} />
     </div>
   );
 } 

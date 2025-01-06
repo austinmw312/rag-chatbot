@@ -16,27 +16,19 @@ interface FileItem {
   created_at: string;
 }
 
-export function FileList() {
-  const [files, setFiles] = useState<FileItem[]>([]);
+interface FileListProps {
+  files: FileItem[];
+  onFilesChange: () => Promise<void>;
+}
+
+export function FileList({ files, onFilesChange }: FileListProps) {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const [previewFile, setPreviewFile] = useState<{ id: string; name: string } | null>(null);
 
-  const fetchFiles = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('files')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setFiles(data || []);
-    } catch (error) {
-      console.error('Error fetching files:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    setLoading(false);
+  }, []);
 
   const handleDelete = async (id: number, fileName: string) => {
     try {
@@ -56,7 +48,7 @@ export function FileList() {
       if (dbError) throw dbError;
 
       // Update UI
-      setFiles(files.filter(file => file.id !== id));
+      await onFilesChange();
       
       toast({
         title: "File deleted",
@@ -71,10 +63,6 @@ export function FileList() {
       });
     }
   };
-
-  useEffect(() => {
-    fetchFiles();
-  }, []);
 
   if (loading) {
     return <div className="p-4 text-sm text-muted-foreground">Loading files...</div>;
