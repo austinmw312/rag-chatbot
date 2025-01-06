@@ -61,11 +61,15 @@ export function ChatInterface() {
       <div className="flex-1 overflow-y-auto p-4">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
-            <h1 className="text-4xl font-bold tracking-tight">RAG Chatbot</h1>
-            <p className="text-lg text-muted-foreground max-w-sm">
-              Upload files and chat with them here using Retrieval Augmented Generation.
-              Support for dozens of file types!
-            </p>
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-4">
+              <h1 className="text-4xl font-bold tracking-tight">
+                RAG Chatbot
+              </h1>
+              <p className="text-lg text-muted-foreground max-w-sm">
+                Upload files and chat with them here using Retrieval Augmented Generation.
+                Support for dozens of file types!
+              </p>
+            </div>
           </div>
         ) : (
           <div className="space-y-4">
