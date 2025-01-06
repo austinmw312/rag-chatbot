@@ -1,11 +1,8 @@
 Next steps:
-- Implement PGVector integration
-- Detailed instructions are in instructions.md
-- Note that we are on a new branch for the supabase integration, so we eventually will need to merge that into main
-- Do simple test with PGVector
-- Use LangChain docs on how to use PGVector
-- Figure out which embedding model to use - refer to that one Supabase video on RAG
-- Figure out how to use HNSWIndex for efficient similarity search
+- Stream responses from LLM, or simulate streaming with animation
+- Make it so users cannot delete the sample documents, but they can delete their own documents
+- Maybe implement PDF viewer, research how to do it
+- Toggle dark mode and light mode
 
 
 ```

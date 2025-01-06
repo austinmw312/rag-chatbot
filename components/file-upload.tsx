@@ -171,7 +171,7 @@ export function FileUpload() {
             type="file"
             onChange={handleFileSelect}
             accept={acceptString}
-            className="max-w-xs"
+            className="max-w-xs hover:bg-accent hover:cursor-pointer transition-colors"
             disabled={uploading}
           />
           <Button 
