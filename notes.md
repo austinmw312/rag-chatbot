@@ -1,8 +1,18 @@
 Next steps:
-- Implement Supabase and PGVector integration
+- Implement PGVector integration
 - Detailed instructions are in instructions.md
 - Note that we are on a new branch for the supabase integration, so we eventually will need to merge that into main
-- If anything gets messed up, we can just go back to the main branch and start over
+- Do simple test with PGVector
+- Use LangChain docs on how to use PGVector
+- Figure out which embedding model to use - refer to that one Supabase video on RAG
+- Figure out how to use HNSWIndex for efficient similarity search
+
+
+```
+import PGVectorStore from "@langchain/community/vectorstores/pgvector";
+
+const vectorStore = await PGVectorStore.initialize(embeddings, {})
+```
 
 - File types?
 - How to store in database? Map PDF to markdown?

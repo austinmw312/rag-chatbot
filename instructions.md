@@ -186,33 +186,72 @@ Current file structure:
 # Vector Database Implementation with Supabase pgvector
 
 1. **Setup & Configuration**
-   - Enable pgvector extension in Supabase project
-   - Create vectors table in Supabase:
-     - `embeddings`: (id, content_id, embedding, metadata)
-   - Update `.env.local` with necessary pgvector configurations
+   - Enable pgvector extension in Supabase project (in 'extensions' schema)
+   - Create embeddings table in public schema:
+     ```
+     - id (bigint, primary key)
+     - file_id (uuid, references files)
+     - content_chunk (text)
+     - metadata (jsonb)
+     - embedding (vector(384))
+     ```
+   - Set up HNSW index for efficient similarity search
+   - Configure cascade deletes for file management
+   - Add Supabase connection details to `.env.local`:
+     ```
+     NEXT_PUBLIC_SUPABASE_URL=your_project_url
+     NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+     ```
 
-2. **Vector Store Integration**
+2. **Embedding Model**
+   - Use GTE-small embedding model (384 dimensions)
+   - Benefits over OpenAI embeddings:
+     - 4x smaller vectors (384 vs 1536 dimensions)
+     - Faster similarity searches
+     - No API costs
+     - Similar quality rankings
+     - Runs within Supabase
+
+3. **LangChain Integration**
    Files to update:
    - `backend/rag.ts`:
      - Replace MemoryVectorStore with PGVectorStore
-     - Implement vector storage and retrieval using Supabase
-     - Add error handling for database operations
-     - Add batch processing for large document sets
+     - Configure PGVectorStore with Supabase connection
+     - Keep existing document processing:
+       - RecursiveCharacterTextSplitter for chunking
+       - Document metadata handling
+     - Use existing Supabase client for connection
 
-   - `backend/bot.ts`:
-     - Update similarity search to use pgvector
-     - Modify context handling for database-stored vectors
-     - Optimize query performance with proper indexing
+   Process:
+   1. LangChain makes SQL queries to pgvector
+   2. pgvector uses HNSW index for fast similarity search
+   3. Results returned through LangChain interface
 
-   - `backend/parse.ts`:
-     - Add vector embedding generation during file parsing
-     - Implement batch uploads to vector store
-     - Add cleanup for old vectors on file updates
+4. **Process Flow**
+   ```
+   Upload → Parse → Generate Embeddings (GTE-small) 
+   → Store in pgvector via LangChain 
+   → RAG Queries (LangChain) → pgvector (using HNSW index)
+   ```
 
-3. **Performance Optimization**
-   - Implement vector store indexing
-   - Add caching layer for frequent queries
-   - Set up batch processing for large documents
+5. **Performance Optimization**
+   - Use HNSW indexing for fast similarity search
+   - Implement proper batch processing for large documents
+   - Configure optimal chunk sizes for embeddings
+   - Set up efficient vector search parameters
+
+This implementation combines:
+- Supabase's pgvector with HNSW indexing for fast searches
+- GTE-small embeddings (384 dimensions) for efficiency
+- LangChain's document processing and vector store interface
+- Existing Supabase client for authentication and connection
+
+Benefits:
+- Better performance with smaller vectors
+- Cost reduction by eliminating embedding API calls
+- Maintained functionality of document processing
+- Scalable vector search with HNSW indexing
+- Simplified authentication using Supabase
 
 # Branch Management
 
