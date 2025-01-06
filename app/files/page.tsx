@@ -6,7 +6,9 @@ export default function FilesPage() {
       <div className="space-y-4">
         <h1 className="text-2xl font-bold">Files</h1>
         <p className="text-muted-foreground">
-          Upload files to chat with them using RAG. Supported formats: PDF, DOC, DOCX, TXT
+          Upload files to chat with them using RAG. Supported formats: 
+          PDF, Word (DOC/DOCX), Excel (XLS/XLSX), PowerPoint (PPT/PPTX), 
+          and more.
         </p>
         <FileUpload />
       </div>

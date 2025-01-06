@@ -9,6 +9,23 @@ import { FileIcon, UploadCloud } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FileList } from "@/components/file-list";
 
+const ALLOWED_FILE_TYPES = [
+  // Base types
+  '.pdf',
+  
+  // Documents and presentations
+  '.doc', '.docx', '.docm', '.dot', '.dotm',
+  '.ppt', '.pptx', '.pptm', '.pot', '.potm', '.potx',
+  '.rtf', '.txt', '.epub',
+  
+  // Spreadsheets
+  '.xlsx', '.xls', '.xlsm', '.xlsb', '.csv',
+  '.numbers', '.ods', '.tsv'
+];
+
+// Update the accept attribute in file input
+const acceptString = ALLOWED_FILE_TYPES.join(',');
+
 export function FileUpload() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -118,7 +135,7 @@ export function FileUpload() {
           <Input
             type="file"
             onChange={handleFileSelect}
-            accept=".pdf,.doc,.docx,.txt"
+            accept={acceptString}
             className="max-w-xs"
             disabled={uploading}
           />
