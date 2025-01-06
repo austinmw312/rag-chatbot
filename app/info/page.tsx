@@ -14,17 +14,17 @@ export default function InfoPage() {
           When you upload a document, the system:
         </p>
         <ol>
-          <li>Parses the document using LlamaParse</li>
+          <li>Parses the document into markdown using LlamaParse</li>
           <li>Splits it into chunks and generates embeddings using OpenAI</li>
-          <li>Stores these in a Postgres vector database</li>
-          <li>Retrieves relevant context when you ask questions</li>
+          <li>Stores and indexes these embeddings in a Postgres vector database</li>
+          <li>Performs similarity search to retrieve relevant context when you ask questions</li>
         </ol>
 
         <h2>Tech Stack</h2>
         <ul>
           <li><strong>Frontend:</strong> Next.js, TypeScript, Tailwind CSS</li>
-          <li><strong>Backend:</strong> Supabase, PostgreSQL with pgvector</li>
-          <li><strong>AI:</strong> OpenAI embeddings, GPT-4</li>
+          <li><strong>Backend:</strong> Supabase, PostgreSQL with pgvector, Langchain</li>
+          <li><strong>AI:</strong> OpenAI embeddings, GPT-4o</li>
           <li><strong>Document Processing:</strong> LlamaParse</li>
         </ul>
 
