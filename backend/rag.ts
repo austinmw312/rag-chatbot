@@ -1,10 +1,11 @@
 import { OpenAIEmbeddings } from "@langchain/openai";
-import { MemoryVectorStore } from "langchain/vectorstores/memory";
+import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
 import { Document } from "@langchain/core/documents";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
+import { supabase } from "@/lib/supabaseClient";
 
 export class RAGBot {
-  private vectorStore!: MemoryVectorStore;
+  private vectorStore!: PGVectorStore;
   private embeddings: OpenAIEmbeddings;
   
   constructor() {
@@ -14,10 +15,27 @@ export class RAGBot {
   }
 
   async initialize() {
-    this.vectorStore = new MemoryVectorStore(this.embeddings);
+    // Get connection string from Supabase
+    const { data: { db_url } } = await supabase.rpc('get_db_url');
+
+    this.vectorStore = await PGVectorStore.initialize(
+      this.embeddings,
+      {
+        postgresConnectionOptions: {
+          connectionString: db_url
+        },
+        tableName: 'embeddings',
+        columns: {
+          idColumnName: 'id',
+          vectorColumnName: 'embedding',
+          contentColumnName: 'content_chunk',
+          metadataColumnName: 'metadata',
+        }
+      }
+    );
   }
 
-  async addDocuments(texts: string[]) {
+  async addDocuments(texts: string[], fileId: string) {
     const splitter = new RecursiveCharacterTextSplitter({
       chunkSize: 3000,
       chunkOverlap: 500,
@@ -27,7 +45,8 @@ export class RAGBot {
     const documents = texts.map((text, index) => new Document({ 
       pageContent: text,
       metadata: { 
-        docId: index,
+        file_id: fileId,
+        chunk_index: index,
         timestamp: Date.now() 
       }
     }));

@@ -38,3 +38,25 @@ ADD CONSTRAINT embeddings_file_id_fkey
 
 -- Create HNSW index for cosine similarity (for OpenAI embeddings)
 CREATE INDEX ON embeddings USING hnsw (embedding vector_cosine_ops);
+
+-- Create function to get database connection URL
+CREATE OR REPLACE FUNCTION get_db_url()
+RETURNS text
+LANGUAGE plpgsql
+SECURITY DEFINER -- Runs with creator's permissions
+AS $$
+BEGIN
+  -- Format: postgresql://user:password@host:port/database
+  RETURN format(
+    'postgresql://%s:%s@%s:%s/%s',
+    current_user,
+    current_setting('postgres.password'),
+    current_setting('db.host'),
+    current_setting('db.port'),
+    current_setting('db.name')
+  );
+END;
+$$;
+
+-- Grant execute permission to anon role
+GRANT EXECUTE ON FUNCTION get_db_url() TO anon;
