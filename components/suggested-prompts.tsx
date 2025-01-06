@@ -10,9 +10,9 @@ export function SuggestedPrompts({ onSelectPrompt, messageCount }: SuggestedProm
   const [isVisible, setIsVisible] = useState(true);
 
   const prompts = [
-    "What are some activities I can do in Canada?",
     "What is Canada's Great Trail?",
-    "Summarize the document about Canada.",
+    "Summarize the document about whales.",
+    "How are volcanic gases measured?",
   ];
 
   const handlePromptClick = (prompt: string) => {
