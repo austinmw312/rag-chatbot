@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { FileIcon, Trash2Icon } from "lucide-react";
+import { FileIcon, Trash2Icon, EyeIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { FilePreview } from "./file-preview";
 
 interface FileItem {
   id: number;
@@ -19,6 +20,7 @@ export function FileList() {
   const [files, setFiles] = useState<FileItem[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const [previewFile, setPreviewFile] = useState<{ id: string; name: string } | null>(null);
 
   const fetchFiles = async () => {
     try {
@@ -111,17 +113,36 @@ export function FileList() {
                 </div>
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-destructive"
-              onClick={() => handleDelete(file.id, file.name)}
-            >
-              <Trash2Icon className="h-4 w-4" />
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-primary"
+                onClick={() => setPreviewFile({ id: file.id.toString(), name: file.name })}
+              >
+                <EyeIcon className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-destructive"
+                onClick={() => handleDelete(file.id, file.name)}
+              >
+                <Trash2Icon className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       ))}
+
+      {previewFile && (
+        <FilePreview
+          fileId={previewFile.id}
+          fileName={previewFile.name}
+          open={!!previewFile}
+          onOpenChange={(open) => !open && setPreviewFile(null)}
+        />
+      )}
     </div>
   );
 } 
