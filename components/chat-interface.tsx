@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { ScrollArea } from "./ui/scroll-area";
 import ReactMarkdown from 'react-markdown';
 import { useChatContext } from './chat-context';
 import { SuggestedPrompts } from "./suggested-prompts";
+import { Loader2 } from "lucide-react";
 
 export function ChatInterface() {
   const { messages, addMessage } = useChatContext();
@@ -93,7 +93,10 @@ export function ChatInterface() {
             ))}
             {isLoading && (
               <div className="bg-muted rounded-lg p-4 mr-12">
-                <p className="text-sm">Thinking...</p>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <p>AI is thinking</p>
+                </div>
               </div>
             )}
           </div>
