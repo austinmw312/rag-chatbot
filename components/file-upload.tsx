@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useToast } from "@/hooks/use-toast";
 import { FileIcon, UploadCloud, Loader2 } from "lucide-react";
 import { FileList } from "@/components/file-list";
+import { FileItem } from "@/types";
 
 const ALLOWED_FILE_TYPES = [
   // Base types

@@ -6,15 +6,7 @@ import { FileIcon, Trash2Icon, EyeIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { FilePreview } from "./file-preview";
-
-interface FileItem {
-  id: number;
-  name: string;
-  size: number;
-  type: string;
-  parsed_status: boolean;
-  created_at: string;
-}
+import { FileItem } from "@/types";
 
 interface FileListProps {
   files: FileItem[];
