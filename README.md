@@ -1,36 +1,22 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RAG Chatbot Project
 
-## Getting Started
+Thanks for checking out my project! This is a Retrieval Augmented Generation (RAG) chatbot that can understand and discuss any documents you upload.
 
-First, run the development server:
+## How it Works
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+When you upload a document, the system:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. Parses the document into markdown using LlamaParse
+2. Splits it into chunks and generates embeddings using OpenAI
+3. Stores and indexes these embeddings in a Postgres vector database
+4. Performs similarity search to retrieve relevant context when you ask questions
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Frontend:** Next.js, TypeScript, Tailwind CSS
+- **Backend:** Supabase, PostgreSQL with pgvector, Langchain
+- **AI:** OpenAI embeddings, GPT-4
+- **Document Processing:** LlamaParse
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Austin Weideman
+2024
