@@ -18,7 +18,6 @@ export default function InfoPage() {
           <li>Splits it into chunks and generates embeddings using OpenAI</li>
           <li>Stores and indexes these embeddings in a Postgres vector database</li>
           <li>Performs similarity search to retrieve relevant context when you ask questions</li>
-          <li>Includes relevant context in the prompt to the LLM</li>
         </ol>
 
         <h2>Tech Stack</h2>

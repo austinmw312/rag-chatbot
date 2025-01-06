@@ -19,6 +19,7 @@ const nextConfig: NextConfig = {
     
     // Add this for pg
     if (!isServer) {
+      config.resolve = config.resolve || {};
       config.resolve.fallback = {
         ...config.resolve.fallback,
         pg: false,
