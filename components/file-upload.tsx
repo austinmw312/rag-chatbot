@@ -28,6 +28,7 @@ const acceptString = ALLOWED_FILE_TYPES.join(',');
 
 export function FileUpload() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [status, setStatus] = useState<'idle' | 'uploading' | 'parsing'>('idle');
   const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
   const [parsingFileId, setParsingFileId] = useState<string | null>(null);
@@ -85,6 +86,7 @@ export function FileUpload() {
     if (!selectedFile) return;
     
     try {
+      setStatus('uploading');
       setUploading(true);
       
       // Upload file to Supabase Storage
@@ -108,6 +110,9 @@ export function FileUpload() {
         .single();
 
       if (dbError) throw dbError;
+      
+      // Before parsing starts
+      setStatus('parsing');
       
       // Trigger parsing
       const parseResponse = await fetch('/api/parse', {
@@ -145,6 +150,16 @@ export function FileUpload() {
       });
     } finally {
       setUploading(false);
+      setStatus('idle');
+    }
+  };
+
+  // Update the status display
+  const getStatusText = () => {
+    switch(status) {
+      case 'uploading': return "Uploading...";
+      case 'parsing': return "Parsing...";
+      default: return "Ready to upload";
     }
   };
 
@@ -192,11 +207,11 @@ export function FileUpload() {
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  {uploading && (
+                  {status !== 'idle' && (
                     <Loader2 className="h-4 w-4 animate-spin text-primary" />
                   )}
                   <span className="text-xs text-muted-foreground">
-                    {uploading ? "Uploading..." : "Ready to upload"}
+                    {getStatusText()}
                   </span>
                 </div>
               </div>
