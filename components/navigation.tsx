@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MessageSquare, Files } from "lucide-react";
+import { MessageSquare, Files, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function Navigation() {
@@ -30,6 +30,16 @@ export function Navigation() {
         >
           <Files className="h-5 w-5" />
           <span>Manage Files</span>
+        </Link>
+        <Link
+          href="/info"
+          className={cn(
+            "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-colors hover:text-foreground",
+            pathname === "/info" ? "bg-secondary text-foreground" : ""
+          )}
+        >
+          <Info className="h-5 w-5" />
+          <span>Info</span>
         </Link>
       </nav>
     </div>

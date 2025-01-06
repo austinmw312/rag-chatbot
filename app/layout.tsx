@@ -21,25 +21,23 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn(
-        "min-h-screen bg-background font-sans antialiased",
-        inter.className
-      )}>
+      <body className={inter.className}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           enableSystem={false}
           forcedTheme="dark"
+          disableTransitionOnChange
         >
           <ChatProvider>
-            <div className="flex min-h-screen">
+            <div className="flex h-screen">
               <Navigation />
-              <main className="flex-1">
+              <main className="flex-1 overflow-y-auto">
                 {children}
               </main>
             </div>
+            <Toaster />
           </ChatProvider>
-          <Toaster />
         </ThemeProvider>
       </body>
     </html>
