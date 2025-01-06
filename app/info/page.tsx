@@ -29,17 +29,6 @@ export default function InfoPage() {
           <li><strong>Document Processing:</strong> LlamaParse</li>
         </ul>
 
-        <h2>What I Learned</h2>
-        <p>
-          Building this project taught me about:
-        </p>
-        <ul>
-          <li>Vector databases and similarity search</li>
-          <li>Handling different document types</li>
-          <li>Building responsive UIs with Tailwind</li>
-          <li>State management in React</li>
-          <li>Working with AI APIs</li>
-        </ul>
       </div>
     </div>
   );
