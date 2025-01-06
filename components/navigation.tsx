@@ -2,32 +2,36 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
 import { MessageSquare, Files } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function Navigation() {
   const pathname = usePathname();
 
   return (
-    <div className="flex h-screen w-16 flex-col items-center border-r bg-muted pt-8">
-      <Link
-        href="/"
-        className={cn(
-          "flex h-12 w-12 items-center justify-center rounded-lg transition-colors hover:bg-muted-foreground/10",
-          pathname === "/" && "bg-muted-foreground/20"
-        )}
-      >
-        <MessageSquare className="h-6 w-6" />
-      </Link>
-      <Link
-        href="/files"
-        className={cn(
-          "flex h-12 w-12 items-center justify-center rounded-lg transition-colors hover:bg-muted-foreground/10",
-          pathname === "/files" && "bg-muted-foreground/20"
-        )}
-      >
-        <Files className="h-6 w-6" />
-      </Link>
+    <div className="w-64 border-r bg-background">
+      <nav className="flex flex-col gap-4 p-4">
+        <Link
+          href="/"
+          className={cn(
+            "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-colors hover:text-foreground",
+            pathname === "/" ? "bg-secondary text-foreground" : ""
+          )}
+        >
+          <MessageSquare className="h-5 w-5" />
+          <span>Chat</span>
+        </Link>
+        <Link
+          href="/files"
+          className={cn(
+            "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-colors hover:text-foreground",
+            pathname === "/files" ? "bg-secondary text-foreground" : ""
+          )}
+        >
+          <Files className="h-5 w-5" />
+          <span>Manage Files</span>
+        </Link>
+      </nav>
     </div>
   );
 } 
