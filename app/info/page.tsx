@@ -29,6 +29,10 @@ export default function InfoPage() {
           <li><strong>Document Processing:</strong> LlamaParse</li>
         </ul>
 
+        <div className="mt-16 pt-8 border-t text-sm text-muted-foreground text-center space-y-1">
+          <div>Austin Weideman</div>
+          <div>2024</div>
+        </div>
       </div>
     </div>
   );
