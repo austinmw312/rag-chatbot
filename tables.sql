@@ -18,3 +18,23 @@ CREATE TABLE file_contents (
 
 -- Create index for faster lookups
 CREATE INDEX idx_file_contents_file_id ON file_contents(file_id);
+
+-- Create embeddings table for pgvector
+CREATE TABLE embeddings (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  file_id UUID NOT NULL REFERENCES files(id),
+  content_chunk TEXT NOT NULL,
+  metadata JSONB,
+  embedding VECTOR(1536)
+);
+
+-- Add cascade delete
+ALTER TABLE embeddings
+DROP CONSTRAINT embeddings_file_id_fkey,
+ADD CONSTRAINT embeddings_file_id_fkey
+  FOREIGN KEY (file_id)
+  REFERENCES files(id)
+  ON DELETE CASCADE;
+
+-- Create HNSW index for fast similarity search
+CREATE INDEX ON embeddings USING hnsw (embedding vector_ip_ops);
