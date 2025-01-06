@@ -99,8 +99,8 @@ export class Chatbot {
   /**
    * Add documents to the RAG system
    */
-  async addDocuments(texts: string[]) {
-    await this.rag.addDocuments(texts);
+  async addDocuments(texts: string[], fileId: string) {
+    await this.rag.addDocuments(texts, fileId);
   }
 
   /**

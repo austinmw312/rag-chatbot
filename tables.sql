@@ -22,7 +22,7 @@ CREATE INDEX idx_file_contents_file_id ON file_contents(file_id);
 -- Create embeddings table for pgvector
 CREATE TABLE embeddings (
   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  file_id UUID NOT NULL REFERENCES files(id),
+  file_id UUID,
   content_chunk TEXT NOT NULL,
   metadata JSONB,
   embedding VECTOR(1536)
@@ -30,7 +30,6 @@ CREATE TABLE embeddings (
 
 -- Add cascade delete
 ALTER TABLE embeddings
-DROP CONSTRAINT embeddings_file_id_fkey,
 ADD CONSTRAINT embeddings_file_id_fkey
   FOREIGN KEY (file_id)
   REFERENCES files(id)
@@ -43,17 +42,18 @@ CREATE INDEX ON embeddings USING hnsw (embedding vector_cosine_ops);
 CREATE OR REPLACE FUNCTION get_db_url()
 RETURNS text
 LANGUAGE plpgsql
-SECURITY DEFINER -- Runs with creator's permissions
+SECURITY DEFINER
 AS $$
 BEGIN
-  -- Format: postgresql://user:password@host:port/database
+  -- Use direct connection string format for Supabase
   RETURN format(
-    'postgresql://%s:%s@%s:%s/%s',
-    current_user,
-    current_setting('postgres.password'),
-    current_setting('db.host'),
-    current_setting('db.port'),
-    current_setting('db.name')
+    'postgres://%s.%s:%s@%s:%s/%s',
+    current_database(),  -- project ref
+    current_user,       -- role name
+    current_setting('supabase_auth.jwt_secret'),  -- password
+    current_setting('supabase.db_host'),          -- host
+    '5432',                                       -- port
+    current_database()                            -- database name
   );
 END;
 $$;

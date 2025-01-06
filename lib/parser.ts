@@ -2,12 +2,20 @@ import { supabase } from '@/lib/supabaseClient';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as os from 'os';
+import { Chatbot } from '@/backend/bot';
 
 export class Parser {
   private tempDir: string = '';
+  private chatbot: Chatbot;
+
+  constructor() {
+    this.chatbot = new Chatbot();
+  }
 
   async parseFile(fileId: string, bucketPath: string, apiKey: string) {
     try {
+      await this.chatbot.initialize();
+
       // Dynamically import LlamaParse only when needed
       const { LlamaParseReader } = await import('llamaindex');
       
@@ -43,6 +51,9 @@ export class Parser {
         });
 
       if (insertError) throw insertError;
+
+      // Create embeddings from parsed content
+      await this.chatbot.addDocuments([markdownContent], fileId);
 
       // Update parsed_status
       const { error: updateError } = await supabase

@@ -15,8 +15,7 @@ export class RAGBot {
   }
 
   async initialize() {
-    // Get connection string from Supabase
-    const { data: { db_url } } = await supabase.rpc('get_db_url');
+    const db_url = `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOST}:5432/${process.env.POSTGRES_DATABASE}`;
 
     this.vectorStore = await PGVectorStore.initialize(
       this.embeddings,
@@ -30,6 +29,9 @@ export class RAGBot {
           vectorColumnName: 'embedding',
           contentColumnName: 'content_chunk',
           metadataColumnName: 'metadata',
+        },
+        filter: {
+          whereClause: "file_id = $1"
         }
       }
     );
@@ -42,17 +44,32 @@ export class RAGBot {
       separators: ["\n\n", "\n", ".", "!", "?", ",", " ", ""],
     });
 
-    const documents = texts.map((text, index) => new Document({ 
+    const documents = texts.map(text => new Document({ 
       pageContent: text,
-      metadata: { 
-        file_id: fileId,
-        chunk_index: index,
-        timestamp: Date.now() 
+      metadata: {
+        file_id: fileId
       }
     }));
+
     const splits = await splitter.splitDocuments(documents);
     
+    // First, get the current max id before adding documents
+    const { data: maxResult } = await supabase
+      .from('embeddings')
+      .select('id')
+      .order('id', { ascending: false })
+      .limit(1);
+    
+    const startId = maxResult?.[0]?.id || 0;
+
+    // Add documents normally
     await this.vectorStore.addDocuments(splits);
+
+    // Update all new embeddings with the file_id
+    await supabase
+      .from('embeddings')
+      .update({ file_id: fileId })
+      .gt('id', startId);  // Only update the new ones we just added
   }
 
   async query(question: string, numResults: number = 6): Promise<Document[]> {

@@ -17,6 +17,15 @@ const nextConfig: NextConfig = {
     config.externals = (config.externals || []) as string[];
     (config.externals as string[]).push('onnxruntime-node');
     
+    // Add this for pg
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        pg: false,
+        'pg-native': false
+      };
+    }
+    
     // Suppress warnings from @huggingface/transformers
     config.ignoreWarnings = [
       { module: /@huggingface\/transformers/ }
