@@ -5,7 +5,7 @@ import { Input } from "./ui/input";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useToast } from "@/hooks/use-toast";
-import { FileIcon, UploadCloud } from "lucide-react";
+import { FileIcon, UploadCloud, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FileList } from "@/components/file-list";
 
@@ -172,14 +172,9 @@ export function FileUpload() {
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="h-2 flex-1 bg-secondary rounded-full overflow-hidden">
-                    <div 
-                      className={cn(
-                        "h-full bg-primary transition-all duration-300",
-                        uploading ? "animate-pulse w-full" : "w-0"
-                      )}
-                    />
-                  </div>
+                  {uploading && (
+                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                  )}
                   <span className="text-xs text-muted-foreground">
                     {uploading ? "Uploading..." : "Ready to upload"}
                   </span>
