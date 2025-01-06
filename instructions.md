@@ -193,65 +193,56 @@ Current file structure:
      - file_id (uuid, references files)
      - content_chunk (text)
      - metadata (jsonb)
-     - embedding (vector(384))
+     - embedding (vector(1536))  // OpenAI dimensions
      ```
-   - Set up HNSW index for efficient similarity search
+   - Set up HNSW index for efficient similarity search:
+     - Makes pgvector's similarity operations fast
+     - Used automatically by LangChain's queries
+     - Essential for performance at scale
    - Configure cascade deletes for file management
-   - Add Supabase connection details to `.env.local`:
-     ```
-     NEXT_PUBLIC_SUPABASE_URL=your_project_url
-     NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
-     ```
+   - Use existing Supabase connection from `lib/supabaseClient.ts`
 
-2. **Embedding Model**
-   - Use GTE-small embedding model (384 dimensions)
-   - Benefits over OpenAI embeddings:
-     - 4x smaller vectors (384 vs 1536 dimensions)
-     - Faster similarity searches
-     - No API costs
-     - Similar quality rankings
-     - Runs within Supabase
-
-3. **LangChain Integration**
+2. **Vector Store Migration**
    Files to update:
    - `backend/rag.ts`:
      - Replace MemoryVectorStore with PGVectorStore
-     - Configure PGVectorStore with Supabase connection
-     - Keep existing document processing:
-       - RecursiveCharacterTextSplitter for chunking
-       - Document metadata handling
-     - Use existing Supabase client for connection
+     - Keep using OpenAI embeddings (1536 dimensions)
+     - Configure PGVectorStore with Supabase connection string
+     - Update document fetching to use file_contents table
+     - Keep existing document splitting logic
+     - Keep existing metadata handling
+     - Keep using similaritySearch() (now backed by pgvector)
 
-   Process:
-   1. LangChain makes SQL queries to pgvector
-   2. pgvector uses HNSW index for fast similarity search
-   3. Results returned through LangChain interface
-
-4. **Process Flow**
+3. **Process Flow**
    ```
-   Upload → Parse → Generate Embeddings (GTE-small) 
-   → Store in pgvector via LangChain 
-   → RAG Queries (LangChain) → pgvector (using HNSW index)
+   1. Content stored in file_contents table
+   2. RAGBot fetches content from Supabase
+   3. Uses existing OpenAI embeddings
+   4. Stores vectors in pgvector via PGVectorStore
+   5. LangChain similaritySearch() generates SQL
+   6. pgvector uses HNSW index for fast lookup
    ```
 
-5. **Performance Optimization**
-   - Use HNSW indexing for fast similarity search
-   - Implement proper batch processing for large documents
-   - Configure optimal chunk sizes for embeddings
-   - Set up efficient vector search parameters
+4. **Performance Optimization**
+   - HNSW index automatically used by pgvector when LangChain queries
+   - Keep existing chunk sizes and overlap settings
+   - Configure proper batch sizes for vector operations
 
-This implementation combines:
-- Supabase's pgvector with HNSW indexing for fast searches
-- GTE-small embeddings (384 dimensions) for efficiency
-- LangChain's document processing and vector store interface
-- Existing Supabase client for authentication and connection
+This implementation:
+- Uses Supabase pgvector for persistent vector storage
+- Keeps existing OpenAI embeddings
+- Uses existing Supabase connection
+- Maintains current document processing logic
+- Uses HNSW index under the hood for speed
+- Just changes where we get/store content
 
 Benefits:
-- Better performance with smaller vectors
-- Cost reduction by eliminating embedding API calls
-- Maintained functionality of document processing
-- Scalable vector search with HNSW indexing
-- Simplified authentication using Supabase
+- Persistent vector storage (no more in-memory)
+- Fast similarity search via HNSW + pgvector
+- Minimal changes to existing code
+- Keeps working OpenAI integration
+- Uses existing Supabase authentication
+- Efficient scaling with indexed searches
 
 # Branch Management
 
