@@ -6,13 +6,14 @@ import { Input } from "./ui/input";
 import ReactMarkdown from 'react-markdown';
 import { useChatContext } from './chat-context';
 import { SuggestedPrompts } from "./suggested-prompts";
-import { Loader2 } from "lucide-react";
+import { Loader2, Copy, CheckCheck } from "lucide-react";
 
 export function ChatInterface() {
   const { messages, addMessage } = useChatContext();
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [threadId, setThreadId] = useState<string>();
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   async function handleSubmit(e: React.FormEvent | string) {
     if (typeof e !== 'string') {
@@ -79,7 +80,7 @@ export function ChatInterface() {
                 className={`rounded-lg p-4 ${
                   message.role === "user" 
                     ? "bg-primary text-black ml-12"
-                    : "bg-muted mr-12"
+                    : "bg-muted mr-12 relative group pr-12"
                 }`}
               >
                 <ReactMarkdown 
@@ -89,6 +90,24 @@ export function ChatInterface() {
                 >
                   {message.content}
                 </ReactMarkdown>
+                
+                {message.role === "assistant" && (
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(message.content);
+                      setCopiedIndex(i);
+                      setTimeout(() => setCopiedIndex(null), 2000);
+                    }}
+                    className="absolute top-4 right-4 p-1.5 rounded-md opacity-0 group-hover:opacity-100 hover:bg-background transition-all duration-200"
+                    aria-label="Copy message"
+                  >
+                    {copiedIndex === i ? (
+                      <CheckCheck className="h-4 w-4 text-green-500" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                  </button>
+                )}
               </div>
             ))}
             {isLoading && (
