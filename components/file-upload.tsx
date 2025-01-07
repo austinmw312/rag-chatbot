@@ -2,7 +2,7 @@
 
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useToast } from "@/hooks/use-toast";
 import { FileIcon, UploadCloud, Loader2 } from "lucide-react";
@@ -35,7 +35,7 @@ export function FileUpload() {
   const [parsingJobId, setParsingJobId] = useState<string | null>(null);
   const [files, setFiles] = useState<FileItem[]>([]);
 
-  const fetchFiles = async () => {
+  const fetchFiles = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('files')
@@ -47,18 +47,17 @@ export function FileUpload() {
     } catch (error) {
       console.error('Error fetching files:', error);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchFiles();
-  }, []);
+  }, [fetchFiles]);
 
   useEffect(() => {
     if (!parsingFileId || !parsingJobId) return;
 
     const checkStatus = async () => {
       try {
-        // Check job status
         const statusResponse = await fetch(
           `/api/parse/status?fileId=${parsingFileId}&jobId=${parsingJobId}`,
           {
@@ -73,10 +72,12 @@ export function FileUpload() {
         const { parsed } = await statusResponse.json();
 
         if (parsed) {
+          // Clear IDs first to prevent any race conditions
           setParsingFileId(null);
           setParsingJobId(null);
-          await fetchFiles();
           
+          // Then update UI
+          await fetchFiles();
           toast({
             title: "File processed successfully",
             description: "Your file has been parsed and is ready to use.",
@@ -89,7 +90,7 @@ export function FileUpload() {
 
     const interval = setInterval(checkStatus, 2000);
     return () => clearInterval(interval);
-  }, [parsingFileId, parsingJobId, toast]);
+  }, [parsingFileId, parsingJobId, toast, fetchFiles]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
