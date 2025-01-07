@@ -56,40 +56,43 @@ export function FileUpload() {
   useEffect(() => {
     if (!parsingFileId || !parsingJobId) return;
 
+    let timeoutId: NodeJS.Timeout;
+
     const checkStatus = async () => {
       try {
         const statusResponse = await fetch(
           `/api/parse/status?fileId=${parsingFileId}&jobId=${parsingJobId}`,
-          {
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          }
+          { headers: { 'Content-Type': 'application/json' } }
         );
 
         if (!statusResponse.ok) throw new Error('Failed to check status');
-        
-        const { parsed } = await statusResponse.json();
+        const { parsed, status } = await statusResponse.json();
 
         if (parsed) {
-          // Clear IDs first to prevent any race conditions
+          // Success - stop checking and update UI
           setParsingFileId(null);
           setParsingJobId(null);
-          
-          // Then update UI
           await fetchFiles();
           toast({
             title: "File processed successfully",
             description: "Your file has been parsed and is ready to use.",
           });
+        } else if (status === 'PENDING') {
+          // Still processing - check again in 2 seconds
+          timeoutId = setTimeout(checkStatus, 2000);
         }
       } catch (error) {
         console.error('Error checking parse status:', error);
+        setParsingFileId(null);
+        setParsingJobId(null);
       }
     };
 
-    const interval = setInterval(checkStatus, 2000);
-    return () => clearInterval(interval);
+    // Start checking
+    checkStatus();
+
+    // Cleanup
+    return () => clearTimeout(timeoutId);
   }, [parsingFileId, parsingJobId, toast, fetchFiles]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {

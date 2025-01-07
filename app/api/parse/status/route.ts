@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabaseClient';
-import { Chatbot } from '@/backend/bot';
 
 export const runtime = 'edge';
 
@@ -38,12 +37,15 @@ export async function GET(req: NextRequest) {
     const statusData = await statusResponse.json();
     console.log('Status Response:', statusData);
 
-    // If not SUCCESS, return early
+    // If not SUCCESS, return early with no processing
     if (statusData.status !== 'SUCCESS') {
-      return NextResponse.json({ parsed: false });
+      return NextResponse.json({ 
+        parsed: false, 
+        status: statusData.status  // Send back current status
+      });
     }
 
-    // If SUCCESS, process everything and return true
+    // If we get here, it's SUCCESS - do everything ONCE
     console.log('Job completed, fetching results...');
     
     const resultResponse = await fetch(
