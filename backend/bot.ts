@@ -29,6 +29,22 @@ const messageTrimmer = trimMessages({
   startOn: "human",
 });
 
+// Add this utility function at the top level
+function logChatGroup(message: string, contexts: Document[], aiResponse: string) {
+  console.log("\n_____");
+  console.log("\nUser Message:");
+  console.log(message);
+  
+  console.log("\nRetrieved Contexts:");
+  contexts.forEach((doc, i) => {
+    console.log(`\n[${i + 1}] ${doc.pageContent.substring(0, 150)}...`);
+  });
+  
+  console.log("\nAI Response:");
+  console.log(aiResponse);
+  console.log("\n_____\n");
+}
+
 export class Chatbot {
   private app!: ReturnType<typeof StateGraph.prototype.compile>;
   private llm: ChatOpenAI;
@@ -113,7 +129,6 @@ export class Chatbot {
       },
     };
 
-    // Convert previous messages to the format expected by the bot
     const allMessages = [
       ...previousMessages,
       {
@@ -128,6 +143,10 @@ export class Chatbot {
 
     const response = await this.app.invoke(input, config);
     this.lastContext = response.context || [];
+    
+    // Add logging here
+    const aiResponse = response.messages[response.messages.length - 1].content;
+    logChatGroup(message, this.lastContext, aiResponse);
     
     return response.messages[response.messages.length - 1];
   }
