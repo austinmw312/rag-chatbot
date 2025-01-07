@@ -13,6 +13,12 @@ interface FileListProps {
   onFilesChange: () => Promise<void>;
 }
 
+const SAMPLE_FILES = [
+  'volcano_FAQs.pdf',
+  'whales_facts.pdf',
+  'canada_fun_facts.pdf'
+];
+
 export function FileList({ files, onFilesChange }: FileListProps) {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -23,6 +29,15 @@ export function FileList({ files, onFilesChange }: FileListProps) {
   }, []);
 
   const handleDelete = async (id: number, fileName: string) => {
+    if (isSampleFile(fileName)) {
+      toast({
+        title: "Cannot delete sample file",
+        description: "This is a sample file and cannot be deleted.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       // Delete from storage
       const { error: storageError } = await supabase.storage
@@ -54,6 +69,10 @@ export function FileList({ files, onFilesChange }: FileListProps) {
         variant: "destructive",
       });
     }
+  };
+
+  const isSampleFile = (fileName: string) => {
+    return SAMPLE_FILES.includes(fileName);
   };
 
   if (loading) {
@@ -91,6 +110,9 @@ export function FileList({ files, onFilesChange }: FileListProps) {
                     {file.parsed_status ? 'Parsed' : 'Processing'}
                   </span>
                 </div>
+                {isSampleFile(file.name) && (
+                  <span className="text-xs text-blue-500">Sample File</span>
+                )}
               </div>
             </div>
             <div className="flex gap-2">
@@ -102,14 +124,16 @@ export function FileList({ files, onFilesChange }: FileListProps) {
               >
                 <EyeIcon className="h-4 w-4" />
               </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-muted-foreground hover:text-destructive"
-                onClick={() => handleDelete(file.id, file.name)}
-              >
-                <Trash2Icon className="h-4 w-4" />
-              </Button>
+              {!isSampleFile(file.name) && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:text-destructive"
+                  onClick={() => handleDelete(file.id, file.name)}
+                >
+                  <Trash2Icon className="h-4 w-4" />
+                </Button>
+              )}
             </div>
           </div>
         </div>

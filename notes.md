@@ -3,6 +3,7 @@ Next steps:
 - Make it so users cannot delete the sample documents, but they can delete their own documents
 - Maybe implement PDF viewer, research how to do it
 - Toggle dark mode and light mode
+- Make mobile friendly
 
 
 ```
