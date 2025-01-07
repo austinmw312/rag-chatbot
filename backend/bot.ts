@@ -70,6 +70,8 @@ export class Chatbot {
          If you cannot find the specific information related to the question in the context, you must disclose this to the user.
          After you have disclosed this, you may try to answer the question using your general knowledge if you have it.
          
+         Important: Only answer the most recent user message. Do not try to answer previous messages.
+         
          Context: {context}`,
       ],
       ["placeholder", "{messages}"],
@@ -77,28 +79,25 @@ export class Chatbot {
 
     // Define the function that processes messages and calls the model
     const callModel = async (state: typeof GraphAnnotation.State) => {
-      // Get relevant context
+      // Get only the latest message
       const lastMessage = state.messages[state.messages.length - 1];
       const messageText = typeof lastMessage.content === 'string' 
         ? lastMessage.content 
         : lastMessage.content.map(c => 'text' in c ? c.text : '').join(' ');
       
-      // Query RAG with message and last context
-      const searchText = `${messageText} ${this.lastContext.map(doc => doc.pageContent).join(' ')}`;
-      const context = await this.rag.query(searchText);
+      // Query RAG with only the current message
+      const context = await this.rag.query(messageText);
       
-      // Trim messages to manage context window
-      const trimmedMessages = await messageTrimmer.invoke(state.messages);
+      // Only include the last few messages for context
+      const recentMessages = state.messages.slice(-3); // Keep last 3 messages for context
+      const trimmedMessages = await messageTrimmer.invoke(recentMessages);
       
-      // Format prompt with current state
       const prompt = await promptTemplate.invoke({
         messages: trimmedMessages,
         context: context.map(doc => doc.pageContent).join("\n\n"),
       });
       
-      // Get response from LLM
       const response = await this.llm.invoke(prompt);
-      
       return { messages: [response], context };
     };
 
