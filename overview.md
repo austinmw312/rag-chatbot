@@ -66,5 +66,5 @@ This project is a document-aware chatbot that uses Retrieval Augmented Generatio
 ## Data Flow
 
 1. User uploads document → Parsed to text → Embedded → Stored in vector DB
-2. User sends message → Relevant context retrieved → Combined with prompt → AI response
+2. User sends message → Relevant context is retrieved → Combined with prompt → AI response
 3. Response displayed → Added to chat history → Ready for next interaction
