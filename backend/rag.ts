@@ -15,7 +15,7 @@ export class RAGBot {
   }
 
   async initialize() {
-    const db_url = `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOST}:5432/${process.env.POSTGRES_DATABASE}?sslmode=require`;
+    const db_url = `postgresql://postgres.xgpvpsvrnsthorcljyqa:${process.env.POSTGRES_PASSWORD}@aws-0-us-west-1.pooler.supabase.com:6543/postgres`;
 
     this.vectorStore = await PGVectorStore.initialize(
       this.embeddings,
