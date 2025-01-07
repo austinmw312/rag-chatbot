@@ -4,13 +4,14 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Navigation } from "@/components/navigation";
 import { ChatProvider } from "@/components/chat-context";
+import { SidebarProvider } from "@/components/layout/sidebar-context";
 import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "RAG Chat",
-  description: "Chat with your documents using RAG",
+  title: "RAG Chatbot",
+  description: "Chat with your documents using AI",
 };
 
 export default function RootLayout({
@@ -29,14 +30,17 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ChatProvider>
-            <div className="flex h-screen">
-              <Navigation />
-              <main className="flex-1 overflow-y-auto">
-                {children}
-              </main>
-            </div>
-            <Toaster />
+            <SidebarProvider>
+              <div className="flex min-h-screen">
+                <Navigation />
+                <main className="flex-1 lg:pl-64">
+                  <div className="h-14 lg:hidden" />
+                  {children}
+                </main>
+              </div>
+            </SidebarProvider>
           </ChatProvider>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
