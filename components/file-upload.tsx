@@ -32,6 +32,7 @@ export function FileUpload() {
   const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
   const [parsingFileId, setParsingFileId] = useState<string | null>(null);
+  const [parsingJobId, setParsingJobId] = useState<string | null>(null);
   const [files, setFiles] = useState<FileItem[]>([]);
 
   const fetchFiles = async () => {
@@ -53,15 +54,29 @@ export function FileUpload() {
   }, []);
 
   useEffect(() => {
-    if (!parsingFileId) return;
+    if (!parsingFileId || !parsingJobId) return;
 
     const checkStatus = async () => {
       try {
-        const response = await fetch(`/api/parse/status?fileId=${parsingFileId}`);
-        const { parsed } = await response.json();
+        // Check job status
+        const statusResponse = await fetch(
+          `/api/parse/status?fileId=${parsingFileId}&jobId=${parsingJobId}`,
+          {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+
+        if (!statusResponse.ok) throw new Error('Failed to check status');
+        
+        const { parsed } = await statusResponse.json();
 
         if (parsed) {
           setParsingFileId(null);
+          setParsingJobId(null);
+          await fetchFiles();
+          
           toast({
             title: "File processed successfully",
             description: "Your file has been parsed and is ready to use.",
@@ -74,7 +89,7 @@ export function FileUpload() {
 
     const interval = setInterval(checkStatus, 2000);
     return () => clearInterval(interval);
-  }, [parsingFileId, toast]);
+  }, [parsingFileId, parsingJobId, toast]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -111,7 +126,6 @@ export function FileUpload() {
 
       if (dbError) throw dbError;
       
-      // Before parsing starts
       setStatus('parsing');
       
       // Trigger parsing
@@ -128,7 +142,9 @@ export function FileUpload() {
         throw new Error('Failed to start parsing');
       }
 
+      const { job_id } = await parseResponse.json();
       setParsingFileId(fileData.id);
+      setParsingJobId(job_id);
       await fetchFiles();
       
       toast({
