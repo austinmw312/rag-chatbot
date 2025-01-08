@@ -28,6 +28,19 @@ export default function InfoPage() {
           <li><strong>Document Processing:</strong> LlamaParse</li>
         </ul>
 
+        <h2>Github</h2>
+        <p>
+          Check out the documented Github repo for this project{' '}
+          <a 
+            href="https://github.com/austinmw312/rag-chatbot"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:text-blue-600 underline"
+          >
+            here
+          </a>.
+        </p>
+
         <div className="mt-16 pt-8 border-t text-sm text-muted-foreground text-center space-y-1">
           <div>Austin Weideman</div>
           <div>2024</div>

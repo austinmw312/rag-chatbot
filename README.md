@@ -2,6 +2,8 @@
 
 Thanks for checking out my project! This is a Retrieval Augmented Generation (RAG) chatbot that can understand and discuss any documents you upload.
 
+Try out out the deployed project [here](https://rag-chatbot-pearl.vercel.app/).
+
 ## How it Works
 
 When you upload a document, the system:
