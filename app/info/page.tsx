@@ -23,8 +23,8 @@ export default function InfoPage() {
         <h2>Tech Stack</h2>
         <ul>
           <li><strong>Frontend:</strong> Next.js, TypeScript, Tailwind CSS</li>
-          <li><strong>Backend:</strong> Supabase, PostgreSQL with pgvector, Langchain</li>
-          <li><strong>AI:</strong> OpenAI embeddings, GPT-4o</li>
+          <li><strong>Backend:</strong> Supabase, PostgreSQL with pgvector</li>
+          <li><strong>AI:</strong> OpenAI embeddings, GPT-4o, LangChain</li>
           <li><strong>Document Processing:</strong> LlamaParse</li>
         </ul>
 
