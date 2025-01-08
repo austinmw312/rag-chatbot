@@ -81,6 +81,10 @@ export function ChatInterface() {
                   message.role === "user" 
                     ? "bg-primary text-black ml-12"
                     : "bg-muted mr-12 relative group pr-12"
+                } ${
+                  message.role === "assistant" && i === messages.length - 1
+                    ? "animate-fade-in opacity-0"
+                    : "opacity-100"
                 }`}
               >
                 <ReactMarkdown 
