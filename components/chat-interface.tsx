@@ -72,7 +72,7 @@ export function ChatInterface() {
                 RAG Chatbot
               </h1>
               <p className="text-lg text-muted-foreground max-w-sm">
-                Upload files and chat with them here using Retrieval Augmented Generation.
+                Upload files and chat with them here using Retrieval Augmented Generation, or test with our sample documents.
                 Support for dozens of file types!
               </p>
             </div>
