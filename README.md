@@ -1,6 +1,6 @@
 # RAG Chatbot Project
 
-Thanks for checking out my project! This is a Retrieval Augmented Generation (RAG) chatbot that can understand and discuss any documents you upload.
+Thanks for checking out my project! This is a Retrieval Augmented Generation (RAG) chatbot that can understand and discuss any documents you upload, with support for dozens of document types.
 
 Try out out the deployed project [here](https://rag-chatbot-pearl.vercel.app/).
 
